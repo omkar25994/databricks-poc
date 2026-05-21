@@ -26,10 +26,10 @@ jobs:
       - name: Update Repo (Auto Pull)
         run: |
           databricks repos update \
-          --repo-id REPO_ID_HERE \
+          --repo-id 7474656866480792 \
           --branch main
 
       - name: Trigger Job
         run: |
           databricks jobs run-now \
-          --job-id JOB_ID_HERE
+          --job-id 771776842634842
