@@ -39,7 +39,7 @@ jobs:
       # ✅ CONDITIONAL JOB TRIGGERS
 
      
-       - name: Trigger Job1
+      - name: Trigger Job1
         run: |
           if grep -q "notebooks/job_notebook.py" files.txt; then
             echo "Triggering Job1"
@@ -56,5 +56,3 @@ jobs:
           else
             echo "Job2 not changed"
           fi
-
-
