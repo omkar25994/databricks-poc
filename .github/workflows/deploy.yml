@@ -10,49 +10,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ✅ Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ✅ Step 2: Install Databricks CLI
       - name: Install Databricks CLI
         run: pip install databricks-cli
 
+      # ✅ Step 3: Set Databricks environment
       - name: Set Databricks Environment
         run: |
           echo "DATABRICKS_HOST=${{ secrets.DATABRICKS_HOST }}" >> $GITHUB_ENV
           echo "DATABRICKS_TOKEN=${{ secrets.DATABRICKS_TOKEN }}" >> $GITHUB_ENV
 
+      # ✅ Step 4: Update Repo in Databricks
       - name: Update Repo (Auto Pull)
         run: |
           databricks repos update \
           --path "/Repos/om1821@gmail.com/databricks-poc" \
           --branch main
 
-      # - name: Trigger Job
-      #   run: |
-      #     databricks jobs run-now \
-      #     --job-id 771776842634842
-      
+      # ✅ Step 5: Detect changed files (FIXED VERSION)
       - name: Detect Changed Files
         run: |
-          echo "CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+          git fetch --depth=2
+          git diff --name-only HEAD~1 HEAD > files.txt
+          echo "=========== Changed files ==========="
+          cat files.txt
 
-      # ✅ CONDITIONAL JOB TRIGGERS
-
-     
+      # ✅ Step 6: Trigger Job1 (job_notebook.py)
       - name: Trigger Job1
         run: |
           if grep -q "notebooks/job_notebook.py" files.txt; then
-            echo "Triggering Job1"
+            echo "✅ Triggering Job1"
             databricks jobs run-now --job-id 771776842634842
           else
-            echo "Job1 not changed"
+            echo "❌ Job1 not changed"
           fi
-      
+
+      # ✅ Step 7: Trigger Job2 (etl_job1.py)
       - name: Trigger Job2
         run: |
           if grep -q "notebooks/etl_job1.py" files.txt; then
-            echo "Triggering Job2"
+            echo "✅ Triggering Job2"
             databricks jobs run-now --job-id 109514205917996
           else
-            echo "Job2 not changed"
+            echo "❌ Job2 not changed"
           fi
