@@ -27,7 +27,22 @@ jobs:
           --path "/Repos/om1821@gmail.com/databricks-poc" \
           --branch main
 
-      - name: Trigger Job
+      # - name: Trigger Job
+      #   run: |
+      #     databricks jobs run-now \
+      #     --job-id 771776842634842
+      
+      - name: Detect Changed Files
         run: |
-          databricks jobs run-now \
-          --job-id 771776842634842
+          echo "CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})" >> $GITHUB_ENV
+
+      # ✅ CONDITIONAL JOB TRIGGERS
+
+      - name: Trigger Job1
+        if: contains(env.CHANGED_FILES, 'notebooks/job_notebook.py')
+        run: databricks jobs run-now --job-id 771776842634842
+
+      - name: Trigger Job2
+        if: contains(env.CHANGED_FILES, 'etl_job1.py')
+        run: databricks jobs run-now --job-id 109514205917996
+
