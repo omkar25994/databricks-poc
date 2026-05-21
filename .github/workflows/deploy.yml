@@ -38,11 +38,23 @@ jobs:
 
       # ✅ CONDITIONAL JOB TRIGGERS
 
-      - name: Trigger Job1
-        if: contains(env.CHANGED_FILES, 'notebooks/job_notebook.py')
-        run: databricks jobs run-now --job-id 771776842634842
-
+     
+       - name: Trigger Job1
+        run: |
+          if grep -q "notebooks/job_notebook.py" files.txt; then
+            echo "Triggering Job1"
+            databricks jobs run-now --job-id 771776842634842
+          else
+            echo "Job1 not changed"
+          fi
+      
       - name: Trigger Job2
-        if: contains(env.CHANGED_FILES, 'etl_job1.py')
-        run: databricks jobs run-now --job-id 109514205917996
+        run: |
+          if grep -q "notebooks/etl_job1.py" files.txt; then
+            echo "Triggering Job2"
+            databricks jobs run-now --job-id 109514205917996
+          else
+            echo "Job2 not changed"
+          fi
+
 
